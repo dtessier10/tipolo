@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet" />
- 
+
   <style>
     :root {
       --cream:   #F5EDD8;
@@ -17,9 +17,9 @@
       --gris:    #7A6A58;
       --papier:  #EDE3CC;
     }
- 
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
- 
+
     html, body {
       height: 100%;
       background: var(--ink);
@@ -27,7 +27,7 @@
       font-family: 'Courier Prime', monospace;
       overflow: hidden;
     }
- 
+
     /* ── Grain overlay ── */
     body::before {
       content: '';
@@ -38,7 +38,7 @@
       z-index: 100;
       opacity: 0.4;
     }
- 
+
     /* ── Scanlines ── */
     body::after {
       content: '';
@@ -54,7 +54,7 @@
       pointer-events: none;
       z-index: 99;
     }
- 
+
     /* ── Main layout ── */
     .scene {
       height: 100vh;
@@ -65,7 +65,7 @@
       position: relative;
       padding: 2rem;
     }
- 
+
     /* ── Decorative corner marks ── */
     .corner {
       position: absolute;
@@ -79,7 +79,7 @@
     .corner.tr { top: 24px; right: 24px; border-width: 1px 1px 0 0; }
     .corner.bl { bottom: 24px; left: 24px; border-width: 0 0 1px 1px; }
     .corner.br { bottom: 24px; right: 24px; border-width: 0 1px 1px 0; }
- 
+
     /* ── Card ── */
     .card {
       max-width: 420px;
@@ -89,11 +89,11 @@
       transform: translateY(20px);
       animation: fadeUp 0.9s cubic-bezier(0.16,1,0.3,1) 0.3s forwards;
     }
- 
+
     @keyframes fadeUp {
       to { opacity: 1; transform: translateY(0); }
     }
- 
+
     /* ── Ordre header ── */
     .ordre-label {
       font-size: 10px;
@@ -103,7 +103,7 @@
       margin-bottom: 6px;
       opacity: 0.8;
     }
- 
+
     .divider {
       width: 60px;
       height: 1px;
@@ -111,7 +111,7 @@
       margin: 0 auto 20px;
       opacity: 0.4;
     }
- 
+
     /* ── Song title ── */
     .song-title {
       font-family: 'Cormorant Garamond', serif;
@@ -122,12 +122,12 @@
       margin-bottom: 6px;
       letter-spacing: 0.02em;
     }
- 
+
     .song-title em {
       font-style: italic;
       color: var(--or);
     }
- 
+
     .song-artist {
       font-size: 11px;
       letter-spacing: 0.18em;
@@ -135,7 +135,7 @@
       color: var(--gris);
       margin-bottom: 36px;
     }
- 
+
     /* ── Waveform animation ── */
     .waveform {
       display: flex;
@@ -145,7 +145,7 @@
       height: 40px;
       margin-bottom: 32px;
     }
- 
+
     .bar {
       width: 3px;
       background: var(--or);
@@ -154,12 +154,12 @@
       transform-origin: bottom;
       transition: opacity 0.3s;
     }
- 
+
     .waveform.playing .bar {
       opacity: 0.85;
       animation: wave var(--dur, 0.8s) ease-in-out infinite alternate;
     }
- 
+
     .bar:nth-child(1)  { --h: 8px;  --dur: 0.7s; animation-delay: 0.0s; }
     .bar:nth-child(2)  { --h: 18px; --dur: 0.9s; animation-delay: 0.1s; }
     .bar:nth-child(3)  { --h: 28px; --dur: 0.6s; animation-delay: 0.2s; }
@@ -173,12 +173,12 @@
     .bar:nth-child(11) { --h: 34px; --dur: 0.8s; animation-delay: 0.2s; }
     .bar:nth-child(12) { --h: 18px; --dur: 0.9s; animation-delay: 0.0s; }
     .bar:nth-child(13) { --h: 10px; --dur: 0.6s; animation-delay: 0.4s; }
- 
+
     @keyframes wave {
       from { height: 4px; }
       to   { height: var(--h); }
     }
- 
+
     /* ── Play button ── */
     .play-btn {
       display: inline-flex;
@@ -198,7 +198,7 @@
       position: relative;
       overflow: hidden;
     }
- 
+
     .play-btn::before {
       content: '';
       position: absolute;
@@ -208,22 +208,22 @@
       transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
       z-index: -1;
     }
- 
+
     .play-btn:hover::before,
     .play-btn:focus::before {
       transform: translateX(0);
     }
- 
+
     .play-btn:hover,
     .play-btn:focus {
       color: var(--ink);
       border-color: var(--or);
       outline: none;
     }
- 
+
     .play-btn .icon { font-size: 14px; transition: transform 0.2s; }
     .play-btn:hover .icon { transform: scale(1.2); }
- 
+
     /* ── Status message ── */
     .status {
       margin-top: 20px;
@@ -233,7 +233,7 @@
       min-height: 16px;
       transition: opacity 0.3s;
     }
- 
+
     /* ── Error / Not found ── */
     .not-found {
       font-family: 'Cormorant Garamond', serif;
@@ -242,14 +242,14 @@
       color: var(--rouge);
       font-style: italic;
     }
- 
+
     .not-found-sub {
       margin-top: 10px;
       font-size: 11px;
       color: var(--gris);
       letter-spacing: 0.1em;
     }
- 
+
     /* ── Intro overlay (autoplay blocked) ── */
     .tap-overlay {
       position: fixed;
@@ -265,22 +265,22 @@
       opacity: 1;
       transition: opacity 0.5s;
     }
- 
+
     .tap-overlay.hidden {
       opacity: 0;
       pointer-events: none;
     }
- 
+
     .tap-icon {
       font-size: 2.5rem;
       animation: pulse 2s ease-in-out infinite;
     }
- 
+
     @keyframes pulse {
       0%, 100% { transform: scale(1); opacity: 1; }
       50% { transform: scale(1.08); opacity: 0.7; }
     }
- 
+
     .tap-label {
       font-family: 'Cormorant Garamond', serif;
       font-size: 1.3rem;
@@ -289,7 +289,7 @@
       color: var(--cream);
       letter-spacing: 0.05em;
     }
- 
+
     .tap-sub {
       font-size: 10px;
       letter-spacing: 0.2em;
@@ -299,109 +299,116 @@
   </style>
 </head>
 <body>
- 
+
 <!-- Tap to start overlay (contourne le blocage autoplay des navigateurs mobiles) -->
 <div class="tap-overlay" id="tapOverlay">
   <div class="tap-icon">🎵</div>
   <div class="tap-label">Touchez pour démarrer</div>
   <div class="tap-sub">Opération Tipolo</div>
 </div>
- 
+
 <div class="scene">
   <div class="corner tl"></div>
   <div class="corner tr"></div>
   <div class="corner bl"></div>
   <div class="corner br"></div>
- 
+
   <div class="card" id="card">
     <!-- Contenu injecté par JS -->
   </div>
 </div>
- 
+
 <audio id="player" preload="auto"></audio>
- 
+
 <script>
   // ── Catalogue des pistes ────────────────────────────────────────────────────
   // URLs  : ?id=1  à  ?id=10
   // Fichiers : audio/piste1.mp3  à  audio/piste10.mp3
   // Aucun titre n'est affiché — le joueur voit uniquement "Piste 01", etc.
   const SONGS = {
-    1:  { file: 'audio/piste1.mp3'  },
-    2:  { file: 'audio/piste2.mp3'  },
-    3:  { file: 'audio/piste3.mp3'  },
-    4:  { file: 'audio/piste4.mp3'  },
-    5:  { file: 'audio/piste5.mp3'  },
-    6:  { file: 'audio/piste6.mp3'  },
-    7:  { file: 'audio/piste7.mp3'  },
-    8:  { file: 'audio/piste8.mp3'  },
-    9:  { file: 'audio/piste9.mp3'  },
-    10: { file: 'audio/piste10.mp3' },
+    1:  { file: 'piste1.mp3'  },
+    2:  { file: 'piste2.mp3'  },
+    3:  { file: 'piste3.mp3'  },
+    4:  { file: 'piste4.mp3'  },
+    5:  { file: 'piste5.mp3'  },
+    6:  { file: 'piste6.mp3'  },
+    7:  { file: 'piste7.mp3'  },
+    8:  { file: 'piste8.mp3'  },
+    9:  { file: 'piste9.mp3'  },
+    10: { file: 'piste10.mp3' },
   };
- 
+
   // ── Lire le paramètre ?id= dans l'URL ──────────────────────────────────────
   const params  = new URLSearchParams(window.location.search);
   const idRaw   = parseInt(params.get('id'), 10);
   const song    = SONGS[idRaw];
   const numStr  = String(idRaw).padStart(2, '0'); // "01", "02", …
- 
+
   const card    = document.getElementById('card');
   const player  = document.getElementById('player');
   const overlay = document.getElementById('tapOverlay');
- 
+
   // ── Construire l'interface ──────────────────────────────────────────────────
   if (song) {
     player.src = song.file;
- 
+
     card.innerHTML = `
       <p class="ordre-label">L'Ordre du Certificat Cadeau — Épreuve musicale</p>
       <div class="divider"></div>
       <h1 class="song-title">Piste <em>${numStr}</em></h1>
- 
+
       <div class="waveform" id="waveform">
         ${Array.from({length: 13}, () => '<div class="bar"></div>').join('')}
       </div>
- 
+
       <button class="play-btn" id="playBtn" aria-label="Lecture / Pause">
         <span class="icon" id="btnIcon">▶</span>
         <span id="btnLabel">Écouter</span>
       </button>
- 
+
       <p class="status" id="status">Prêt à jouer</p>
     `;
- 
+
     const waveform = document.getElementById('waveform');
     const playBtn  = document.getElementById('playBtn');
     const btnIcon  = document.getElementById('btnIcon');
     const btnLabel = document.getElementById('btnLabel');
     const status   = document.getElementById('status');
- 
+
     let playing = false;
- 
-    function startPlay() {
-      player.play().then(() => {
-        playing = true;
-        waveform.classList.add('playing');
-        btnIcon.textContent  = '⏸';
-        btnLabel.textContent = 'Pause';
-        status.textContent   = 'En cours de lecture…';
-      }).catch(() => {
-        status.textContent = 'Erreur de lecture. Vérifiez le fichier audio.';
-      });
+
+    function setPlaying(val) {
+      playing = val;
+      waveform.classList.toggle('playing', val);
+      btnIcon.textContent  = val ? '⏸' : '▶';
+      btnLabel.textContent = val ? 'Pause' : 'Écouter';
+      status.textContent   = val ? 'En cours de lecture…' : 'En pause';
     }
- 
+
+    function doPlay() {
+      player.load();
+      const p = player.play();
+      if (p !== undefined) {
+        p.then(() => {
+          setPlaying(true);
+        }).catch((err) => {
+          console.error('Erreur audio:', err);
+          status.textContent = 'Impossible de lire. (' + err.name + ')';
+        });
+      } else {
+        setPlaying(true);
+      }
+    }
+
     function togglePlay() {
       if (playing) {
         player.pause();
-        playing = false;
-        waveform.classList.remove('playing');
-        btnIcon.textContent  = '▶';
-        btnLabel.textContent = 'Écouter';
-        status.textContent   = 'En pause';
+        setPlaying(false);
       } else {
-        startPlay();
+        doPlay();
       }
     }
- 
+
     player.addEventListener('ended', () => {
       playing = false;
       waveform.classList.remove('playing');
@@ -409,15 +416,21 @@
       btnLabel.textContent = 'Réécouter';
       status.textContent   = 'Terminé';
     });
- 
-    playBtn.addEventListener('click', togglePlay);
- 
-    // Tap overlay → démarre la musique (contourne autoplay policy)
+
+    player.addEventListener('error', () => {
+      const codes = ['', 'ABORTED', 'NETWORK', 'DECODE', 'SRC_NOT_SUPPORTED'];
+      const code = player.error ? (codes[player.error.code] || player.error.code) : '?';
+      status.textContent = 'Erreur audio : ' + code;
+    });
+
+    // Overlay → cache l'écran d'accueil, le bouton prend le relais
     overlay.addEventListener('click', () => {
       overlay.classList.add('hidden');
-      startPlay();
+      status.textContent = 'Prêt — appuyez sur Écouter';
     });
- 
+
+    playBtn.addEventListener('click', togglePlay);
+
   } else {
     // ID inconnu ou absent
     card.innerHTML = `
