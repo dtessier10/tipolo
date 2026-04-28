@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Opération Tipolo — Épreuve musicale</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --cream:   #F5EDD8;
+      --ink:     #1C1410;
+      --rouge:   #8B2010;
+      --or:      #C8902A;
+      --gris:    #7A6A58;
+      --papier:  #EDE3CC;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      background: var(--ink);
+      color: var(--cream);
+      font-family: 'Courier Prime', monospace;
+      overflow: hidden;
+    }
+
+    /* ── Grain overlay ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 100;
+      opacity: 0.4;
+    }
+
+    /* ── Scanlines ── */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.04) 2px,
+        rgba(0,0,0,0.04) 4px
+      );
+      pointer-events: none;
+      z-index: 99;
+    }
+
+    /* ── Main layout ── */
+    .scene {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      padding: 2rem;
+    }
+
+    /* ── Decorative corner marks ── */
+    .corner {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      border-color: var(--or);
+      border-style: solid;
+      opacity: 0.4;
+    }
+    .corner.tl { top: 24px; left: 24px; border-width: 1px 0 0 1px; }
+    .corner.tr { top: 24px; right: 24px; border-width: 1px 1px 0 0; }
+    .corner.bl { bottom: 24px; left: 24px; border-width: 0 0 1px 1px; }
+    .corner.br { bottom: 24px; right: 24px; border-width: 0 1px 1px 0; }
+
+    /* ── Card ── */
+    .card {
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeUp 0.9s cubic-bezier(0.16,1,0.3,1) 0.3s forwards;
+    }
+
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Ordre header ── */
+    .ordre-label {
+      font-size: 10px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--or);
+      margin-bottom: 6px;
+      opacity: 0.8;
+    }
+
+    .divider {
+      width: 60px;
+      height: 1px;
+      background: var(--or);
+      margin: 0 auto 20px;
+      opacity: 0.4;
+    }
+
+    /* ── Song title ── */
+    .song-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 8vw, 3.2rem);
+      font-weight: 300;
+      line-height: 1.15;
+      color: var(--cream);
+      margin-bottom: 6px;
+      letter-spacing: 0.02em;
+    }
+
+    .song-title em {
+      font-style: italic;
+      color: var(--or);
+    }
+
+    .song-artist {
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gris);
+      margin-bottom: 36px;
+    }
+
+    /* ── Waveform animation ── */
+    .waveform {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      height: 40px;
+      margin-bottom: 32px;
+    }
+
+    .bar {
+      width: 3px;
+      background: var(--or);
+      border-radius: 2px;
+      opacity: 0.2;
+      transform-origin: bottom;
+      transition: opacity 0.3s;
+    }
+
+    .waveform.playing .bar {
+      opacity: 0.85;
+      animation: wave var(--dur, 0.8s) ease-in-out infinite alternate;
+    }
+
+    .bar:nth-child(1)  { --h: 8px;  --dur: 0.7s; animation-delay: 0.0s; }
+    .bar:nth-child(2)  { --h: 18px; --dur: 0.9s; animation-delay: 0.1s; }
+    .bar:nth-child(3)  { --h: 28px; --dur: 0.6s; animation-delay: 0.2s; }
+    .bar:nth-child(4)  { --h: 36px; --dur: 1.1s; animation-delay: 0.05s;}
+    .bar:nth-child(5)  { --h: 24px; --dur: 0.75s;animation-delay: 0.3s; }
+    .bar:nth-child(6)  { --h: 32px; --dur: 0.85s;animation-delay: 0.15s;}
+    .bar:nth-child(7)  { --h: 20px; --dur: 0.65s;animation-delay: 0.25s;}
+    .bar:nth-child(8)  { --h: 30px; --dur: 0.95s;animation-delay: 0.0s; }
+    .bar:nth-child(9)  { --h: 14px; --dur: 0.7s; animation-delay: 0.35s;}
+    .bar:nth-child(10) { --h: 22px; --dur: 1.0s; animation-delay: 0.1s; }
+    .bar:nth-child(11) { --h: 34px; --dur: 0.8s; animation-delay: 0.2s; }
+    .bar:nth-child(12) { --h: 18px; --dur: 0.9s; animation-delay: 0.0s; }
+    .bar:nth-child(13) { --h: 10px; --dur: 0.6s; animation-delay: 0.4s; }
+
+    @keyframes wave {
+      from { height: 4px; }
+      to   { height: var(--h); }
+    }
+
+    /* ── Play button ── */
+    .play-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: none;
+      border: 1px solid rgba(200,144,42,0.5);
+      color: var(--cream);
+      font-family: 'Courier Prime', monospace;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 14px 32px;
+      cursor: pointer;
+      transition: all 0.25s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .play-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--or);
+      transform: translateX(-100%);
+      transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+      z-index: -1;
+    }
+
+    .play-btn:hover::before,
+    .play-btn:focus::before {
+      transform: translateX(0);
+    }
+
+    .play-btn:hover,
+    .play-btn:focus {
+      color: var(--ink);
+      border-color: var(--or);
+      outline: none;
+    }
+
+    .play-btn .icon { font-size: 14px; transition: transform 0.2s; }
+    .play-btn:hover .icon { transform: scale(1.2); }
+
+    /* ── Status message ── */
+    .status {
+      margin-top: 20px;
+      font-size: 11px;
+      color: var(--gris);
+      letter-spacing: 0.1em;
+      min-height: 16px;
+      transition: opacity 0.3s;
+    }
+
+    /* ── Error / Not found ── */
+    .not-found {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem;
+      font-weight: 300;
+      color: var(--rouge);
+      font-style: italic;
+    }
+
+    .not-found-sub {
+      margin-top: 10px;
+      font-size: 11px;
+      color: var(--gris);
+      letter-spacing: 0.1em;
+    }
+
+    /* ── Intro overlay (autoplay blocked) ── */
+    .tap-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(28,20,16,0.96);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+      cursor: pointer;
+      gap: 16px;
+      opacity: 1;
+      transition: opacity 0.5s;
+    }
+
+    .tap-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .tap-icon {
+      font-size: 2.5rem;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.08); opacity: 0.7; }
+    }
+
+    .tap-label {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.3rem;
+      font-weight: 300;
+      font-style: italic;
+      color: var(--cream);
+      letter-spacing: 0.05em;
+    }
+
+    .tap-sub {
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--or);
+    }
+  </style>
+</head>
+<body>
+
+<!-- Tap to start overlay (contourne le blocage autoplay des navigateurs mobiles) -->
+<div class="tap-overlay" id="tapOverlay">
+  <div class="tap-icon">🎵</div>
+  <div class="tap-label">Touchez pour démarrer</div>
+  <div class="tap-sub">Opération Tipolo</div>
+</div>
+
+<div class="scene">
+  <div class="corner tl"></div>
+  <div class="corner tr"></div>
+  <div class="corner bl"></div>
+  <div class="corner br"></div>
+
+  <div class="card" id="card">
+    <!-- Contenu injecté par JS -->
+  </div>
+</div>
+
+<audio id="player" preload="auto"></audio>
+
+<script>
+  // ── Catalogue des chansons ──────────────────────────────────────────────────
+  // Pour chaque chanson: id dans l'URL, fichier MP3, titre affiché, artiste
+  // Les fichiers MP3 doivent être dans le même dossier que index.html
+  // (ou un sous-dossier "audio/")
+  const SONGS = {
+    hymne: {
+      file:   'audio/hymne.mp3',
+      title:  "L'hymne à la beauté du monde",
+      artist: 'Isabelle Boulay',
+    },
+    appuntamento: {
+      file:   'audio/appuntamento.mp3',
+      title:  "L'appuntamento",
+      artist: 'Isabelle Boulay',
+    },
+    delaisses: {
+      file:   'audio/delaisses.mp3',
+      title:  "Le banc des délaissés",
+      artist: 'Isabelle Boulay',
+    },
+    oublierai: {
+      file:   'audio/oublierai.mp3',
+      title:  "Je t'oublierai, je t'oublierai",
+      artist: 'Isabelle Boulay',
+    },
+    saule: {
+      file:   'audio/saule.mp3',
+      title:  "Le Saule",
+      artist: 'Isabelle Boulay',
+    },
+    matane: {
+      file:   'audio/matane.mp3',
+      title:  "Entre Matane et Baton Rouge",
+      artist: 'Isabelle Boulay',
+    },
+    nuages: {
+      file:   'audio/nuages.mp3',
+      title:  "Perce les nuages",
+      artist: 'Isabelle Boulay',
+    },
+    histoire: {
+      file:   'audio/histoire.mp3',
+      title:  "Ton histoire",
+      artist: 'Isabelle Boulay',
+    },
+    neige: {
+      file:   'audio/neige.mp3',
+      title:  "Blanche comme la neige",
+      artist: 'Isabelle Boulay',
+    },
+    amour: {
+      file:   'audio/amour.mp3',
+      title:  "J'ai mal à l'amour",
+      artist: 'Isabelle Boulay',
+    },
+  };
+
+  // ── Lire le paramètre ?id= dans l'URL ──────────────────────────────────────
+  const params = new URLSearchParams(window.location.search);
+  const id     = (params.get('id') || '').toLowerCase().trim();
+  const song   = SONGS[id];
+
+  const card    = document.getElementById('card');
+  const player  = document.getElementById('player');
+  const overlay = document.getElementById('tapOverlay');
+
+  // ── Construire l'interface ──────────────────────────────────────────────────
+  if (song) {
+    player.src = song.file;
+
+    card.innerHTML = `
+      <p class="ordre-label">L'Ordre du Certificat Cadeau — Épreuve musicale</p>
+      <div class="divider"></div>
+      <h1 class="song-title">${song.title}</h1>
+      <p class="song-artist">${song.artist}</p>
+
+      <div class="waveform" id="waveform">
+        ${Array.from({length: 13}, () => '<div class="bar"></div>').join('')}
+      </div>
+
+      <button class="play-btn" id="playBtn" aria-label="Lecture / Pause">
+        <span class="icon" id="btnIcon">▶</span>
+        <span id="btnLabel">Écouter</span>
+      </button>
+
+      <p class="status" id="status">Prêt à jouer</p>
+    `;
+
+    const waveform = document.getElementById('waveform');
+    const playBtn  = document.getElementById('playBtn');
+    const btnIcon  = document.getElementById('btnIcon');
+    const btnLabel = document.getElementById('btnLabel');
+    const status   = document.getElementById('status');
+
+    let playing = false;
+
+    function startPlay() {
+      player.play().then(() => {
+        playing = true;
+        waveform.classList.add('playing');
+        btnIcon.textContent  = '⏸';
+        btnLabel.textContent = 'Pause';
+        status.textContent   = 'En cours de lecture…';
+      }).catch(() => {
+        status.textContent = 'Erreur de lecture. Vérifiez le fichier audio.';
+      });
+    }
+
+    function togglePlay() {
+      if (playing) {
+        player.pause();
+        playing = false;
+        waveform.classList.remove('playing');
+        btnIcon.textContent  = '▶';
+        btnLabel.textContent = 'Écouter';
+        status.textContent   = 'En pause';
+      } else {
+        startPlay();
+      }
+    }
+
+    player.addEventListener('ended', () => {
+      playing = false;
+      waveform.classList.remove('playing');
+      btnIcon.textContent  = '▶';
+      btnLabel.textContent = 'Réécouter';
+      status.textContent   = 'Terminé';
+    });
+
+    playBtn.addEventListener('click', togglePlay);
+
+    // Tap overlay → démarre la musique (contourne autoplay policy)
+    overlay.addEventListener('click', () => {
+      overlay.classList.add('hidden');
+      startPlay();
+    });
+
+  } else {
+    // ID inconnu ou absent
+    card.innerHTML = `
+      <p class="ordre-label">Opération Tipolo</p>
+      <div class="divider"></div>
+      <p class="not-found">Piste introuvable.</p>
+      <p class="not-found-sub">Vérifiez le code QR et réessayez.</p>
+    `;
+    overlay.classList.add('hidden');
+  }
+</script>
+</body>
+</html>
