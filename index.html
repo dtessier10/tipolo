@@ -368,8 +368,8 @@
         overlay.classList.add('hidden');
         player.play().catch(() => {});
       });
-      return;
-    }
+
+    } else {
 
     card.innerHTML = `
       <p class="ordre-label">L'Ordre du Certificat Cadeau — Épreuve musicale</p>
@@ -449,6 +449,8 @@
     });
 
     playBtn.addEventListener('click', togglePlay);
+
+    } // fin du else (piste normale)
 
   } else {
     // ID inconnu ou absent
