@@ -336,13 +336,16 @@
     8:  { file: 'piste8.mp3'  },
     9:  { file: 'piste9.mp3'  },
     10: { file: 'piste10.mp3' },
+    fail: { file: 'fail.mp3', isFail: true },
   };
 
   // ── Lire le paramètre ?id= dans l'URL ──────────────────────────────────────
   const params  = new URLSearchParams(window.location.search);
-  const idRaw   = parseInt(params.get('id'), 10);
-  const song    = SONGS[idRaw];
-  const numStr  = String(idRaw).padStart(2, '0'); // "01", "02", …
+  const idRaw   = params.get('id') || '';
+  const idNum   = parseInt(idRaw, 10);
+  // Accepte ?id=fail ou ?id=1..10
+  const song    = SONGS[idRaw] || SONGS[idNum];
+  const numStr  = isNaN(idNum) ? '' : String(idNum).padStart(2, '0');
 
   const card    = document.getElementById('card');
   const player  = document.getElementById('player');
@@ -351,6 +354,22 @@
   // ── Construire l'interface ──────────────────────────────────────────────────
   if (song) {
     player.src = song.file;
+
+    // ── Faux oiseau : interface spéciale ──
+    if (song.isFail) {
+      card.innerHTML = `
+        <p class="ordre-label">L'Ordre du Certificat Cadeau</p>
+        <div class="divider"></div>
+        <h1 class="song-title" style="font-size:3rem">🎺</h1>
+        <p class="song-artist" style="margin-top:12px">Ce n'est pas le bon oiseau.</p>
+        <p class="status" style="margin-top:16px;font-size:13px">Cherchez encore, agents.</p>
+      `;
+      overlay.addEventListener('click', () => {
+        overlay.classList.add('hidden');
+        player.play().catch(() => {});
+      });
+      return;
+    }
 
     card.innerHTML = `
       <p class="ordre-label">L'Ordre du Certificat Cadeau — Épreuve musicale</p>
